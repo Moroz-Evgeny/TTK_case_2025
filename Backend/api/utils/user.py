@@ -13,20 +13,17 @@ async def _create_new_user(body: UserCreate, session) -> ShowUser:
     async with session.begin():
         user_dal = UserDAL(session)
         user = await user_dal.create_user(
-            name=body.name,
-            surname=body.surname,
-            email=body.email,
+            login=body.login,
+            first_name=body.first_name,
+            middle_name=body.middle_name,
+            last_name=body.last_name,
             hashed_password=Hasher.get_password_hash(body.password),
-            roles=[body.role],
         )
         return ShowUser(
-            user_id=user.user_id,
-            name=user.name,
-            surname=user.surname,
-            email=user.email,
-            role=user.roles[0],
+            id=user.id,
+            login=user.login,
+            role=user.role,
             is_active=user.is_active,
-            invite_id=user.invite_id,
         )
 
 async def _delete_user(id: UUID, session) -> Union[UUID, None]:
@@ -51,13 +48,13 @@ async def _get_user_by_id(id: UUID, session) -> Union[User, None]:
             return user
 
 async def _check_user_permissions(target_user: User, current_user: User) -> bool:
-    if PortalRole.ROLE_PORTAL_SUPERADMIN in target_user.roles and PortalRole.ROLE_PORTAL_USER in current_user.roles:
+    if PortalRole.ROLE_PORTAL_ADMIN == target_user.role and PortalRole.ROLE_PORTAL_USER == current_user.role:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Superadmin cannot be deleted by the user."
         )
-    if target_user.user_id != current_user.user_id:
-        if PortalRole.ROLE_PORTAL_SUPERADMIN not in current_user.roles:
+    if target_user.id != current_user.id:
+        if PortalRole.ROLE_PORTAL_ADMIN != current_user.role:
             return False
-        if PortalRole.ROLE_PORTAL_SUPERADMIN in target_user.roles and PortalRole.ROLE_PORTAL_SUPERADMIN in current_user.roles:
+        if PortalRole.ROLE_PORTAL_ADMIN == target_user.role and PortalRole.ROLE_PORTAL_ADMIN == current_user.role:
             return False
     return True

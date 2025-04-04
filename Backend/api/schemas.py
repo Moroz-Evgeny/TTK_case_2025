@@ -20,52 +20,45 @@ class TunedModel(BaseModel):
 
 class ShowUser(TunedModel):
     user_id: uuid.UUID | None = None
-    name: str
-    surname: str
-    email: EmailStr | None = None
-    role: str
+    login: str
+    role: str 
     is_active: bool | None = None
-    invite_id: str | None = None
 
 class UpdateUserRequest(BaseModel):
-    name: str | None = None
-    surname: str | None = None
-    email: EmailStr | None = None
-
+    login: str | None = None
+    first_name: str | None = None
+    middle_name: str | None = None
+    last_name: str | None = None
+    
 class UserCreate(BaseModel):
-    name: str
-    surname: str
-    email: EmailStr
+    login: str
+    first_name: str
+    middle_name: str
+    last_name: str
     password: str
-    role: str
 
-    @field_validator("name")
+
+    @field_validator("first_name")
     def validate_name(cls, value):
         if not LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(status_code=422, detail="Name incorrect")
         return value
     
-    @field_validator("surname")
+    @field_validator("middle_name")
     def validate_surname(cls, value):
         if not LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(status_code=422, detail="Surname incorrect")
         return value
+    
+    @field_validator("last_name")
+    def validate_surname(cls, value):
+        if not LETTER_MATCH_PATTERN.match(value):
+            raise HTTPException(status_code=422, detail="Lastname incorrect")
+        return value
+
 
 class TaskCreate(BaseModel):
-    title: str
-    description: str
-    status: str = 'backlog'
-    responsible: str
-
-class UpdateTaskRequest(BaseModel):
-    title: str | None = None
-    description: str | None = None
-    status: str | None = None
-    responsible: str | None = None
-
-class AddUserInTeam(BaseModel):
     ...
-
 class Token(BaseModel):
     access_token: str
     token_type: str 

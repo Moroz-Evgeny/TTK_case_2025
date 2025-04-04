@@ -75,10 +75,8 @@ async def get_user_by_id(id: UUID, session: AsyncSession = Depends(get_db), curr
    if user is None:
       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id '{id}' is not found")
    show_user = ShowUser(
-      name=user.name,
-      surname=user.surname,
-      email=user.email,
-      role=user.roles[0],
-      invite_id=user.invite_id,
+      login=user.login,
+      role=user.role,
+      is_active=user.is_active,
    )
    return show_user

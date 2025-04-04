@@ -20,15 +20,15 @@ async def login_for_acess_token(
   response: Response,
   form_data: OAuth2PasswordRequestForm = Depends(),
   db: AsyncSession = Depends(get_db)) -> Token:
-  user = await _authenticate_user(user_email=form_data.username, user_password=form_data.password, session=db)
+  user = await _authenticate_user(login=form_data.username, user_password=form_data.password, session=db)
   if user is None:
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Incorrect username or password")
   
   access_token = create_access_token(
-    data={"type": "access","sub": str(user.user_id), "role": user.roles[0], "invite_id": user.invite_id}
+    data={"type": "access","sub": user.login , "id": str(user.id), "role": user.role}
   )
   refresh_token = create_refresh_token(
-    data={"type": "refresh","sub": str(user.user_id), "role": user.roles[0],}
+    data={"type": "refresh","sub": user.login, "id": str(user.id), "role": user.role}
   )
 
   response.set_cookie(
@@ -46,12 +46,14 @@ async def refresh_token(request: Request, response: Response, session: AsyncSess
   try:
     token = request.cookies.get("refresh_token")
     user = await _get_current_user_from_refresh_token(token=token, session=session)
+
     access_token = create_access_token(
-    data={"type": "access","sub": str(user.user_id), "role": user.roles[0], "invite_id": user.invite_id}
+      data={"type": "access","sub": user.login , "id": str(user.id), "role": user.role}
     )
     refresh_token = create_refresh_token(
-      data={"type": "refresh","sub": str(user.user_id), "role": user.roles[0],}
+      data={"type": "refresh","sub": user.login, "id": str(user.id), "role": user.role}
     )
+    
     response.set_cookie(
       key="refresh_token",
       value=refresh_token,
