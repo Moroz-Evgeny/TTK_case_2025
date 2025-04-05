@@ -13,8 +13,8 @@ services:
     networks:
       - custom
   ttkback:
-    container_name: webpractik
-    image: webpractik
+    container_name: ttkback
+    image: ttkback
     depends_on: 
       - db
     environment:
