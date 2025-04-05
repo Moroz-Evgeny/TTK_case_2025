@@ -35,10 +35,11 @@ export default function LogForm({ logo }) {
 
 		fetch('http://31.41.155.241:8000/login', {
 			method: 'POST',
+			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
-			credentials: 'include',
+
 			body: new URLSearchParams(formData).toString(),
 		})
 			.then(response => response.json())

@@ -38,10 +38,10 @@ export default function TaskDo() {
 		try {
 			const response = await fetch('http://31.41.155.241:8000/login/refresh', {
 				method: 'POST',
+				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				credentials: 'include',
 			})
 
 			if (!response.ok) throw new Error('Failed to refresh token')
@@ -63,13 +63,13 @@ export default function TaskDo() {
 		const makeRequest = async () => {
 			const headers = {
 				...(options.headers || {}),
-				Authorization: `Bearer ${currentToken}`,
+				Authorization: `Bearer ${currentToken}`
 			}
 
 			const response = await fetch(url, {
 				...options,
-				headers,
 				credentials: 'include',
+				headers,
 			})
 
 			// Если токен истёк, обновим его
@@ -80,7 +80,7 @@ export default function TaskDo() {
 
 				const retryHeaders = {
 					...headers,
-					Authorization: `Bearer ${newToken}`,
+					Authorization: `Bearer ${newToken}`
 				}
 
 				return await fetch(url, {
