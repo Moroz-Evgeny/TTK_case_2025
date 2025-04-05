@@ -47,7 +47,6 @@ export default function LogForm({ logo }) {
 					setToken(result.access_token)
 				}
 				setData(result)
-				localStorage.setItem('data', loginForm)
 				console.log(result)
 			})
 			.catch(error => console.error('Ошибка запроса:', error))
