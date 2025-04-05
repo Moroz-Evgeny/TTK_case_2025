@@ -12,36 +12,31 @@ export default function TaskDo() {
 
 	const [priorityDropdownVisible, setPriorityDropdownVisible] = useState(false)
 
-	// Handlers
 	const handleArticleInput = e => setArticle(e.target.value)
 	const handleLoginInput = e => setLogin(e.target.value)
 	const handleTaskDescribtionInput = e => setTaskDescribtion(e.target.value)
 	const handleFileInput = e => setFiles(Array.from(e.target.files))
-
-	const handlePriorityClick = () => {
+	const handlePriorityClick = () =>
 		setPriorityDropdownVisible(!priorityDropdownVisible)
-	}
-
 	const handlePrioritySelect = selectedPriority => {
 		setPriority(selectedPriority)
 		setPriorityDropdownVisible(false)
 	}
 
-	// Format date to ISO string
 	const getFormattedDateTime = () => {
 		if (!dueDate) return ''
 		return new Date(dueDate).toISOString()
 	}
 
-	// Refresh token logic
+	// Обновление access токена, refresh берётся из куки
 	const refreshToken = async () => {
 		try {
 			const response = await fetch('http://31.41.155.241:8000/login/refresh', {
 				method: 'POST',
-				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
 				},
+				credentials: 'include', // 🔥 отправит куку
 			})
 
 			if (!response.ok) throw new Error('Failed to refresh token')
@@ -56,31 +51,28 @@ export default function TaskDo() {
 		}
 	}
 
-	// Authenticated fetch with retry logic
 	const fetchWithAuth = async (url, options = {}) => {
 		let currentToken = token
 
 		const makeRequest = async () => {
 			const headers = {
 				...(options.headers || {}),
-				Authorization: `Bearer ${currentToken}`
+				Authorization: `Bearer ${currentToken}`,
 			}
 
 			const response = await fetch(url, {
 				...options,
-				credentials: 'include',
 				headers,
+				credentials: 'include', // 🔥 нужно всегда
 			})
 
-			// Если токен истёк, обновим его
 			if (response.status === 401) {
 				const newToken = await refreshToken()
 				if (!newToken) throw new Error('Требуется повторная авторизация')
-				currentToken = newToken
 
 				const retryHeaders = {
 					...headers,
-					Authorization: `Bearer ${newToken}`
+					Authorization: `Bearer ${newToken}`,
 				}
 
 				return await fetch(url, {
@@ -96,7 +88,6 @@ export default function TaskDo() {
 		return makeRequest()
 	}
 
-	// Отправка задачи
 	const handleSubmit = async e => {
 		e.preventDefault()
 
@@ -107,10 +98,7 @@ export default function TaskDo() {
 		formData.append('priority', priority)
 		formData.append('status', status)
 		formData.append('assignee_login', login)
-
-		files.forEach(file => {
-			formData.append('image', file)
-		})
+		files.forEach(file => formData.append('image', file))
 
 		try {
 			const response = await fetchWithAuth('http://31.41.155.241:8000/task', {
@@ -130,7 +118,6 @@ export default function TaskDo() {
 		}
 	}
 
-	// UI
 	return (
 		<div className='taskPage'>
 			<form
@@ -144,21 +131,18 @@ export default function TaskDo() {
 					value={article}
 					onChange={handleArticleInput}
 				/>
-
 				<textarea
 					className='describtion'
 					value={content}
 					onChange={handleTaskDescribtionInput}
 					placeholder='Описание'
 				></textarea>
-
 				<input
 					type='text'
 					placeholder='Ответственное лицо'
 					value={login}
 					onChange={handleLoginInput}
 				/>
-
 				<input
 					type='datetime-local'
 					value={dueDate}
