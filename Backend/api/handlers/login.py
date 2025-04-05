@@ -59,7 +59,7 @@ async def refresh_token(request: Request, response: Response, session: AsyncSess
       value=refresh_token,
       httponly=True,  
       # secure=True,              # Только HTTPS
-      samesite="strict", 
+      # samesite="strict", 
       max_age=60 * 60 * 24 * 7
     )
   except:
