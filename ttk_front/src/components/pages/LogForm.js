@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-
-
-
-export default function LogForm() {
+export default function LogForm({ logo }) {
 	const [loginForm, setLoginForm] = useState('')
 	const [passwordForm, setPasswordForm] = useState('')
 	const [token, setToken] = useState(localStorage.getItem('token') || '')
@@ -16,7 +13,6 @@ export default function LogForm() {
 		} else {
 			setBtnStyle('btn')
 		}
-
 	}, [loginForm, passwordForm])
 
 	function handleLoginInput(e) {
@@ -37,7 +33,7 @@ export default function LogForm() {
 			client_secret: '',
 		}
 
-		fetch('localhost:8000/login', {
+		fetch('http://31.41.155.241:8000/login', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
@@ -51,37 +47,44 @@ export default function LogForm() {
 					setToken(result.access_token)
 				}
 				setData(result)
-				localStorage.setItem('data', data)
+				localStorage.setItem('data', loginForm)
+				console.log(result)
 			})
 			.catch(error => console.error('Ошибка запроса:', error))
-	}		
-	
-	return (
-		<form className='register_form' onSubmit={handleSubmit}>
-			<div className='form_input'>
-				<label htmlFor='input'>Логин</label>
-				<div className='input'>
-					<input
-						type='text'
-						onChange={handleLoginInput}
-						value={loginForm}
-						placeholder='login'
-					/>					
-				</div>
-			</div>
-			<div className='form_input'>
-				<label htmlFor='input'>Пароль</label>
-				<input
-					type='password'
-					onChange={handlePasswordInput}
-					value={passwordForm}
-					placeholder='Пароль'
-				/>
-			</div>
+	}
 
-			<button type='submit' className={btnStyle}>
-				Войти
-			</button>
-		</form>
+	return (
+		<div className='loginPage'>
+			<div className='loginForm'>
+				<img src={logo} />
+				<h1>Авторизация</h1>
+				<form className='login_form' onSubmit={handleSubmit}>
+					<div className='form_input'>
+						<label htmlFor='input'>Логин</label>
+						<div className='input'>
+							<input
+								type='text'
+								onChange={handleLoginInput}
+								value={loginForm}
+								placeholder='login'
+							/>
+						</div>
+					</div>
+					<div className='form_input'>
+						<label htmlFor='input'>Пароль</label>
+						<input
+							type='password'
+							onChange={handlePasswordInput}
+							value={passwordForm}
+							placeholder='Пароль'
+						/>
+					</div>
+
+					<button type='submit' className={btnStyle}>
+						Войти
+					</button>
+				</form>
+			</div>
+		</div>
 	)
 }
