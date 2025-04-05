@@ -115,4 +115,10 @@ class TaskDAL:
     await self.db_session.flush()
     return new_history
   
+  async def get_all_task(self):
+    query = select(Task)
+    result = await self.db_session.execute(query)
+    tasks = result.scalars().all()
+    if tasks is not None:
+      return tasks
   

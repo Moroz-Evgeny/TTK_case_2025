@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from api.schemas import TaskCreateHistory, UpdateTaskRequest
 
 from api.utils.jwt import _get_current_user_from_access_token
-from api.utils.task import _create_new_task, _save_task_and_articles_images, _create_history_task, _delete_task, _update_task
+from api.utils.task import _create_new_task, _save_task_and_articles_images, _create_history_task, _delete_task, _update_task, _get_all_task
 from api.utils.user import _get_user_by_login
 
 from db.session import get_db
@@ -90,7 +90,7 @@ async def delete_task(
       session=session,
    )
    if task_history is None:
-      raise HTTPException(status_code=409, detail="Create task history error.")
+      raise HTTPException(status_code=503, detail="Failed to create task history.")
    
    return delete_task.id
 
@@ -120,9 +120,12 @@ async def update_task(
       session=session,
    )   
    if task_history is None:
-     raise HTTPException(status_code=409, detail="Create task history error.")
+     raise HTTPException(status_code=503, detail="Failed to create task history.")
    return update_task.id
 
 @task_router.get('/')
-async def get_all_task():
-   ...
+async def get_all_task(user: User = Depends(_get_current_user_from_access_token), session: AsyncSession = Depends(get_db)):
+   tasks = await _get_all_task(session=session)
+   if tasks is None:
+     raise HTTPException(status_code=404, detail="Tasks not found.")
+   return {"data": tasks}

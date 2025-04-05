@@ -82,3 +82,10 @@ async def _update_task(
     task = await task_dal.update_task(id=id, update_task_params=update_task_params)
     if task is not None:
       return task
+    
+async def _get_all_task(session):
+  async with session.begin():
+    task_dal = TaskDAL(session)
+    all_task = await task_dal.get_all_task()
+    if all_task is not None:
+      return all_task
