@@ -57,7 +57,7 @@ async def refresh_token(request: Request, response: Response, session: AsyncSess
     response.set_cookie(
       key="refresh_token",
       value=refresh_token,
-      httponly=True,  
+      # httponly=True,  
       # secure=True,              # Только HTTPS
       # samesite="strict", 
       max_age=60 * 60 * 24 * 7
