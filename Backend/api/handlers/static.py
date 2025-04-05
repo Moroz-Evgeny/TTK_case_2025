@@ -1,4 +1,4 @@
-import os
+import os, settings
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -27,6 +27,6 @@ async def get_protected_file(file_path: str, user_data: dict = Depends(_get_curr
     return FileResponse(file_path_full)
 
 
-static_router.mount("/static", StaticFiles(directory="TTK_case_2025\\Backend\\static"), name="static")
+static_router.mount("/static", StaticFiles(directory=settings.UPLOAD_DIR), name="static")
 
 
