@@ -70,6 +70,7 @@ class TaskDAL:
       title: str,
       description: str,
       due_date: Optional[datetime],
+      created_at: Optional[datetime],
       priority: str,
       status: str,
       assignee_id: UUID,
@@ -79,6 +80,7 @@ class TaskDAL:
       description=description,
       image_names=image_names,
       due_date=due_date,
+      created_at=created_at,
       priority=priority,
       status=status,
       assignee_id=assignee_id,
@@ -87,13 +89,30 @@ class TaskDAL:
     await self.db_session.flush()
     return new_task
   
+  async def delete_task(self, id: UUID) -> Union[None, Task]:
+    query = update(Task).where(and_(Task.id == id, Task.is_active == True)).values(is_active = False).returning(Task)
+    result = await self.db_session.execute(query)
+    task = result.fetchone()
+    if task is not None:
+      return task[0]
+  
+  async def update_task(self, id: UUID, update_task_params: dict) -> Union[Task, None]:
+    query = update(Task).where(and_(Task.id == id, Task.is_active == True)).values(update_task_params).returning(Task)
+    result = await self.db_session.execute(query)
+    update_user_id = result.fetchone()
+    if update_user_id is not None:
+      return update_user_id[0]
+  
   async def create_history_task(self, body: TaskCreateHistory) -> Union[None, TaskHistory]:
     new_history = TaskHistory(
       id_task=body.id_task,
       task_title=body.task_title,
       user_login=body.user_login,
       change_event=body.change_event,
+      timestamp=body.timestamp,
     )
     self.db_session.add(new_history)
     await self.db_session.flush()
     return new_history
+  
+  

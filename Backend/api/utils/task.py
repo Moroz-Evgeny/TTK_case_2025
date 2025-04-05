@@ -6,7 +6,7 @@ from typing import Optional, Union
 from uuid import UUID
 
 from fastapi import HTTPException, UploadFile, status
-from api.schemas import TaskCreate, TaskCreateHistory
+from api.schemas import TaskCreateHistory, UpdateTaskRequest
 
 from db.dals import TaskDAL, UserDAL
 from db.models import PortalRole, User, Task
@@ -14,6 +14,8 @@ from db.models import PortalRole, User, Task
 
 async def _save_task_and_articles_images(images: UploadFile) -> Union[None, str]:
   image_names = []
+  if images[0].filename == '':
+    return image_names
   for image in images:
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
     filename = f"{uuid.uuid4()}_{image.filename}"
@@ -28,6 +30,7 @@ async def _create_new_task(
     title: str,
     description: str,
     due_date: Optional[datetime],
+    created_at: Optional[datetime],
     priority: str,
     status: str,
     assignee_id: UUID,
@@ -39,6 +42,7 @@ async def _create_new_task(
       title=title,
       description=description,
       due_date=due_date,
+      created_at=created_at,
       priority=priority,
       status=status,
       assignee_id=assignee_id,
@@ -57,3 +61,24 @@ async def _create_history_task(
     history = await task_dal.create_history_task(body=body)
     if history is not None:
       return history
+
+async def _delete_task(
+    id: UUID,
+    session,
+) -> Union[None, Task]:
+  async with session.begin():
+    task_dal = TaskDAL(session)
+    task = await task_dal.delete_task(id=id)
+    if task is not None:
+      return task
+
+async def _update_task(
+    id: UUID,
+    update_task_params: UpdateTaskRequest,
+    session,
+) -> Union[None, Task]:
+  async with session.begin():
+    task_dal = TaskDAL(session)
+    task = await task_dal.update_task(id=id, update_task_params=update_task_params)
+    if task is not None:
+      return task

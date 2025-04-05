@@ -57,21 +57,19 @@ class UserCreate(BaseModel):
             raise HTTPException(status_code=422, detail="Lastname incorrect")
         return value
 
-
-class TaskCreate(BaseModel):
-    title: str = Form(...)
-    description: str = Form(...) 
-    due_date: Optional[datetime] = Form(None)
-    priority: str = Form("MEDIUM")
-    status: str = Form(...)
-    assignee_login: str = Form(...)
-    image: UploadFile = File(...)
-
 class TaskCreateHistory(BaseModel):
     id_task: int
     task_title: str
     user_login: str 
-    change_event: str
+    change_event: list
+    timestamp: Optional[datetime]
+
+class UpdateTaskRequest(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    due_date: Optional[datetime] = None
+    priority: str | None = None
+    status: str | None = None
 
 class Token(BaseModel):
     access_token: str
