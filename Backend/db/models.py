@@ -30,7 +30,7 @@ class PortalRole(str, Enum):
 class User(Base):
    __tablename__ = "users"
    
-   id = Column(UUID(as_uuid=True), primary_key=True)
+   id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
    login = Column(String, unique=True, nullable=False)
    first_name = Column(String, nullable=False)
    middle_name = Column(String, nullable=False)
@@ -64,10 +64,10 @@ class ArticleHistory(Base):
 class Task(Base):
    __tablename__ = "tasks"
    
-   id = Column(UUID(as_uuid=True), primary_key=True)
+   id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
    title = Column(String, nullable=False)
    description = Column(Text, nullable=False)
-   image_url = Column(String, nullable=True)
+   image_names = Column(ARRAY(String), nullable=True)
    created_at = Column(DateTime, default=datetime.utcnow())
    due_date = Column(DateTime, nullable=True)
    priority = Column(String, default=TaskPriority.MEDIUM)

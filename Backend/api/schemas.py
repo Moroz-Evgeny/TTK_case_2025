@@ -1,7 +1,8 @@
+from datetime import datetime
 import re, uuid
 from typing import Optional
 
-from fastapi import HTTPException
+from fastapi import File, Form, HTTPException, UploadFile
 
 from pydantic import BaseModel
 from pydantic import constr
@@ -58,7 +59,14 @@ class UserCreate(BaseModel):
 
 
 class TaskCreate(BaseModel):
-    ...
+    title: str = Form(...)
+    description: str = Form(...) 
+    due_date: Optional[datetime] = Form(None)
+    priority: str = Form("MEDIUM")
+    status: str = Form(...)
+    assignee_login: str = Form(...)
+    image: UploadFile = File(...)
+
 class Token(BaseModel):
     access_token: str
     token_type: str 

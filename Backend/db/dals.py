@@ -1,4 +1,5 @@
-from typing import Union
+from datetime import datetime
+from typing import Optional, Union
 from uuid import UUID
 from sqlalchemy import select, update, and_
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,7 +20,6 @@ class UserDAL:
       hashed_password: str
       ) -> User:
     new_user = User(
-      id=uuid.uuid4(),
       login=login,
       first_name=first_name,
       middle_name=middle_name,
@@ -66,18 +66,22 @@ class TaskDAL:
 
   async def create_new_task(
       self,
-      team_id: str,
       title: str,
       description: str,
+      due_date: Optional[datetime],
+      priority: str,
       status: str,
-      responsible: str) -> Union[None, UUID]:
+      assignee_id: UUID,
+      image_names: list,) -> Union[None, UUID]:
     new_task = Task(
-      team_id=team_id,
       title=title,
       description=description,
+      image_names=image_names,
+      due_date=due_date,
+      priority=priority,
       status=status,
-      responsible=responsible,
+      assignee_id=assignee_id,
     )
     self.db_session.add(new_task)
-    self.db_session.flush()
-    return new_task.task_id
+    await self.db_session.flush()
+    return new_task.id

@@ -47,6 +47,13 @@ async def _get_user_by_id(id: UUID, session) -> Union[User, None]:
         if user is not None:
             return user
 
+async def _get_user_by_login(login: str, session) -> Union[User, None]:
+    async with session.begin():
+        user_dal = UserDAL(session)
+        user = await user_dal.get_user_by_login(login=login)
+        if user is not None:
+            return user
+
 async def _check_user_permissions(target_user: User, current_user: User) -> bool:
     if PortalRole.ROLE_PORTAL_ADMIN == target_user.role and PortalRole.ROLE_PORTAL_USER == current_user.role:
         raise HTTPException(
