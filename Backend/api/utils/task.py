@@ -89,3 +89,10 @@ async def _get_all_task(session):
     all_task = await task_dal.get_all_task()
     if all_task is not None:
       return all_task
+
+async def _get_all_historytask(session):
+  async with session.begin():
+    task_dal = TaskDAL(session)
+    all_task = await task_dal.get_all_task()
+    if all_task is not None:
+      return all_task

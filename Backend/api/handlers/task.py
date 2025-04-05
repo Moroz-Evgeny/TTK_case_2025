@@ -129,3 +129,10 @@ async def get_all_task(user: User = Depends(_get_current_user_from_access_token)
    if tasks is None:
      raise HTTPException(status_code=404, detail="Tasks not found.")
    return {"data": tasks}
+
+@task_router.get('/history')
+async def get_all_task(user: User = Depends(_get_current_user_from_access_token), session: AsyncSession = Depends(get_db)):
+   task_history = await _get_all_history_task(session=session)
+   if task_history is None:
+     raise HTTPException(status_code=404, detail="Tasks not found.")
+   return {"data": task_history}
