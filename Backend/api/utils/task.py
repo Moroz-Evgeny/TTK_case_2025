@@ -45,3 +45,4 @@ async def _create_new_task(
       image_names=image_names,
     )
     return task_id
+
