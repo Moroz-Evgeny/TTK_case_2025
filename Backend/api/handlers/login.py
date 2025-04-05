@@ -44,9 +44,11 @@ async def login_for_acess_token(
 @login_router.post("/refresh", response_model=Token)
 async def refresh_token(request: Request, response: Response, session: AsyncSession = Depends(get_db)) -> Union[None, Token]:
   try:
+    print('-'*100)
     token = request.cookies.get("refresh_token")
+    print(token, request.cookies)
     user = await _get_current_user_from_refresh_token(token=token, session=session)
-
+    print(user)
     access_token = create_access_token(
       data={"type": "access","sub": user.login , "id": str(user.id), "role": user.role}
     )

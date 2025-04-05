@@ -60,6 +60,7 @@ async def _get_current_user_from_access_token(token: str = Depends(oauth2_scheme
     return user
 
 async def _get_current_user_from_refresh_token(token: str, session) -> Union[User, None]:
+    print('-'*100)  
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -70,6 +71,7 @@ async def _get_current_user_from_refresh_token(token: str, session) -> Union[Use
             settings.REFRESH_SECRET_KEY,
             algorithms=[settings.ALGORITHM]
         )
+        print(payload)
         id: str = payload.get("id")
         if id is None:
             raise credentials_exception
@@ -78,6 +80,7 @@ async def _get_current_user_from_refresh_token(token: str, session) -> Union[Use
     async with session.begin():
         user_dal = UserDAL(session)
         user = await user_dal.get_user_by_id(id=id)
+        print(user)
     if user is None:
         raise credentials_exception
     return user
