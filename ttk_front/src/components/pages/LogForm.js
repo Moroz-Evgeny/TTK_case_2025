@@ -38,6 +38,7 @@ export default function LogForm({ logo }) {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
+			credentials: 'include',
 			body: new URLSearchParams(formData).toString(),
 		})
 			.then(response => response.json())
