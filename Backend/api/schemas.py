@@ -67,6 +67,12 @@ class TaskCreate(BaseModel):
     assignee_login: str = Form(...)
     image: UploadFile = File(...)
 
+class TaskCreateHistory(BaseModel):
+    id_task: int
+    task_title: str
+    user_login: str 
+    change_event: str
+
 class Token(BaseModel):
     access_token: str
     token_type: str 

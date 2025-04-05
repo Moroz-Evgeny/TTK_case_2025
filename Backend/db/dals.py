@@ -3,7 +3,8 @@ from typing import Optional, Union
 from uuid import UUID
 from sqlalchemy import select, update, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from db.models import PortalRole, User, Task
+from db.models import PortalRole, User, Task, TaskHistory
+from api.schemas import TaskCreateHistory
 
 import uuid
 
@@ -72,7 +73,7 @@ class TaskDAL:
       priority: str,
       status: str,
       assignee_id: UUID,
-      image_names: list,) -> Union[None, UUID]:
+      image_names: list,) -> Union[None, Task]:
     new_task = Task(
       title=title,
       description=description,
@@ -84,4 +85,15 @@ class TaskDAL:
     )
     self.db_session.add(new_task)
     await self.db_session.flush()
-    return new_task.id
+    return new_task
+  
+  async def create_history_task(self, body: TaskCreateHistory) -> Union[None, TaskHistory]:
+    new_history = TaskHistory(
+      id_task=body.id_task,
+      task_title=body.task_title,
+      user_login=body.user_login,
+      change_event=body.change_event,
+    )
+    self.db_session.add(new_history)
+    await self.db_session.flush()
+    return new_history

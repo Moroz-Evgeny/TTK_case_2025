@@ -7,10 +7,10 @@ from fastapi import APIRouter, Request, Response, Depends,HTTPException, UploadF
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
-from api.schemas import TaskCreate
+from api.schemas import TaskCreate, TaskCreateHistory
 
 from api.utils.jwt import _get_current_user_from_access_token
-from api.utils.task import _create_new_task, _save_task_and_articles_images
+from api.utils.task import _create_new_task, _save_task_and_articles_images, _create_history_task
 from api.utils.user import _get_user_by_login
 
 from db.session import get_db
@@ -52,8 +52,15 @@ async def create_new_task(
           session=session)
       if new_task is None:
           raise HTTPException(status_code=409, detail="Create task error.")
+      task_history = TaskCreateHistory(
+         id_task=new_task.id_task,
+         task_title=new_task.title,
+         user_login=user.login,
+         change_event="Create new task.",
+      )
+      new_task_history = await _create_history_task(body=task_history, session=session)
 
-      return new_task
+      return new_task.id
     except IntegrityError as err:
       logger.error(err)
       raise HTTPException(status_code=503, detail=f"Database error: {err}")

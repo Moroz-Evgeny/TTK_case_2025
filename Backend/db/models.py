@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from sqlalchemy import Boolean
+from sqlalchemy import Boolean, Integer
 from sqlalchemy import Column
 from sqlalchemy import String, Text, DateTime
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
@@ -63,8 +63,9 @@ class ArticleHistory(Base):
 
 class Task(Base):
    __tablename__ = "tasks"
-   
-   id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
+
+   id_task = Column(Integer, primary_key=True, autoincrement=True, unique=True)  
+   id = Column(UUID(as_uuid=True), default=uuid.uuid4, unique=True)
    title = Column(String, nullable=False)
    description = Column(Text, nullable=False)
    image_names = Column(ARRAY(String), nullable=True)
@@ -78,9 +79,10 @@ class Task(Base):
 class TaskHistory(Base):
    __tablename__ = "task_history"
    
-   id = Column(UUID(as_uuid=True), primary_key=True)
-   task_id = Column(UUID(as_uuid=True), nullable=False)
-   user_id = Column(UUID(as_uuid=True), nullable=False)
+   id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
+   id_task = Column(Integer, nullable=False)
+   task_title = Column(String, nullable=False)
+   user_login = Column(String, nullable=False)
    change_event = Column(String, nullable=False)
    timestamp = Column(DateTime, default=datetime.utcnow())
 

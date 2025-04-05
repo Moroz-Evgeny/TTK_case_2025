@@ -6,7 +6,7 @@ from typing import Optional, Union
 from uuid import UUID
 
 from fastapi import HTTPException, UploadFile, status
-from api.schemas import TaskCreate
+from api.schemas import TaskCreate, TaskCreateHistory
 
 from db.dals import TaskDAL, UserDAL
 from db.models import PortalRole, User, Task
@@ -35,7 +35,7 @@ async def _create_new_task(
     session) -> Union[None, UUID]:
   async with session.begin():
     task_dal = TaskDAL(session)
-    task_id = await task_dal.create_new_task(
+    task = await task_dal.create_new_task(
       title=title,
       description=description,
       due_date=due_date,
@@ -44,5 +44,16 @@ async def _create_new_task(
       assignee_id=assignee_id,
       image_names=image_names,
     )
-    return task_id
+    if task is not None:
+      return task
 
+
+async def _create_history_task(
+    body: TaskCreateHistory,
+    session,
+) -> Union[None, UUID]:
+  async with session.begin():
+    task_dal = TaskDAL(session)
+    history = await task_dal.create_history_task(body=body)
+    if history is not None:
+      return history
