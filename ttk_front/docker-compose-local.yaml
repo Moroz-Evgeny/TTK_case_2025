@@ -4,30 +4,17 @@ services:
   frontend:
     container_name: ttkfront
     build:
-      context: ./ttk_front  # ← путь до твоей React-папки
+      context: .  # ← путь до твоей React-папки
       dockerfile: Dockerfile
     ports:
       - "3000:3000"  # CRA использует порт 3000
     volumes:
-      - ./ttk_front:/app
       - /app/node_modules
     networks:
       - custom
     environment:
       - CHOKIDAR_USEPOLLING=true  # помогает hot-reload в Docker
     command: npm start  # ← запуск обычного CRA
-
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"
-    networks:
-      - custom
 
 networks:
   custom:
