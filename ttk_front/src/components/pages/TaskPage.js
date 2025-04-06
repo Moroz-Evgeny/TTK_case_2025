@@ -3,6 +3,7 @@ import { useState } from 'react'
 import React from 'react'
 
 import TaskDo from '../TaskDo'
+import TaskLists from '../TaskLists'
 import Header from '../Header'
 
 export default function TaskPage() {
@@ -10,17 +11,20 @@ export default function TaskPage() {
 
   const [time, setTime] = useState('')
 
-  function SaveChanges() {
-    var now = new Date()
+    function createTask () {
+      var now = new Date()
 
-    setTime(`${now.getFullYear()}-${now.getMonth()}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}.${now.getMilliseconds()}`)
-  }
+			setTime(now.toISOString())
+    }
+    
+  
 
   return (
     <div>
       <Header/>
-      <div>
-        <div><TaskDo /></div>
+      <div className='task_rows'>
+        <TaskDo createTask={createTask} createAt={time}/>
+        <TaskLists/>
       </div>
       
     </div>

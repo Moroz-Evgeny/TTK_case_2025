@@ -1,16 +1,24 @@
 import React, { useState } from 'react'
 
-export default function TaskDo() {
+export default function TaskDo({ createTask, createAt }) {
 	const [article, setArticle] = useState('')
 	const [content, setTaskDescribtion] = useState('')
-	const [priority, setPriority] = useState('Средний')
-	const [status] = useState('Отложенная')
+	const [priority, setPriority] = useState('MEDIUM')
+	const [status, setStatus] = useState('Отложенная')
 	const [token, setToken] = useState(localStorage.getItem('token'))
 	const [login, setLogin] = useState('')
 	const [dueDate, setDueDate] = useState('')
 	const [files, setFiles] = useState([])
 
 	const [priorityDropdownVisible, setPriorityDropdownVisible] = useState(false)
+	const [statusDropdownVisible, setStatusDropdownVisible] = useState(false)
+
+	const handleStatusClick = () =>
+		setStatusDropdownVisible(!statusDropdownVisible)
+	const handleStatusSelect = selectedStatus => {
+		setStatus(selectedStatus)
+		setStatusDropdownVisible(false)
+	}
 
 	const handleArticleInput = e => setArticle(e.target.value)
 	const handleLoginInput = e => setLogin(e.target.value)
@@ -36,7 +44,7 @@ export default function TaskDo() {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				credentials: 'include', // 🔥 отправит куку
+				credentials: 'include',
 			})
 
 			if (!response.ok) throw new Error('Failed to refresh token')
@@ -63,7 +71,7 @@ export default function TaskDo() {
 			const response = await fetch(url, {
 				...options,
 				headers,
-				credentials: 'include', // 🔥 нужно всегда
+				credentials: 'include',
 			})
 
 			if (response.status === 401) {
@@ -90,7 +98,7 @@ export default function TaskDo() {
 
 	const handleSubmit = async e => {
 		e.preventDefault()
-
+		createTask();
 		const formData = new FormData()
 		formData.append('title', article)
 		formData.append('description', content)
@@ -98,8 +106,9 @@ export default function TaskDo() {
 		formData.append('priority', priority)
 		formData.append('status', status)
 		formData.append('assignee_login', login)
+		formData.append('create_at', createAt)
 		files.forEach(file => formData.append('image', file))
-
+		console.log(formData)
 		try {
 			const response = await fetchWithAuth('http://31.41.155.241:8000/task', {
 				method: 'POST',
@@ -149,40 +158,59 @@ export default function TaskDo() {
 					onChange={e => setDueDate(e.target.value)}
 				/>
 
+				{/* Приоритет */}
 				<div className='priority_nav'>
-					<button type='button' onClick={handlePriorityClick}>
+					<button
+						className='priorityMainBtn'
+						type='button'
+						onClick={handlePriorityClick}
+					>
 						Приоритет: {priority}
 					</button>
 					{priorityDropdownVisible && (
 						<ul className='priority-dropdown'>
-							<li>
-								<button
-									type='button'
-									onClick={() => handlePrioritySelect('Высокий')}
-								>
-									Высокий
-								</button>
-							</li>
-							<li>
-								<button
-									type='button'
-									onClick={() => handlePrioritySelect('Средний')}
-								>
-									Средний
-								</button>
-							</li>
-							<li>
-								<button
-									type='button'
-									onClick={() => handlePrioritySelect('Низкий')}
-								>
-									Низкий
-								</button>
-							</li>
+							{['HIGH', 'MEDIUM', 'LOW'].map(p => (
+								<li key={p}>
+									<button
+										className='priorityBtn'
+										type='button'
+										onClick={() => handlePrioritySelect(p)}
+									>
+										{p}
+									</button>
+								</li>
+							))}
 						</ul>
 					)}
 				</div>
 
+				{/* Статус */}
+				<div className='priority_nav'>
+					<button
+						className='priorityMainBtn'
+						type='button'
+						onClick={handleStatusClick}
+					>
+						Статус: {status}
+					</button>
+					{statusDropdownVisible && (
+						<ul className='priority-dropdown'>
+							{['Активная', 'Отложенная', 'Выполнена'].map(s => (
+								<li key={s}>
+									<button
+										className='priorityBtn'
+										type='button'
+										onClick={() => handleStatusSelect(s)}
+									>
+										{s}
+									</button>
+								</li>
+							))}
+						</ul>
+					)}
+				</div>
+
+				{/* Загрузка файлов */}
 				<div className='upload'>
 					<label htmlFor='fileUpload' className='upload-btn'>
 						Загрузить файлы: {files.length}
