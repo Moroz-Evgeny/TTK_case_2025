@@ -17,7 +17,7 @@ function App() {
 					<Route path='login' element={<LogForm logo={logo} />} />
 					<Route path='register' element={<RegForm logo={logo} />} />
 					<Route path='tasks' element={<TaskPage />} />
-					<Route path='profile' element={<ProfilePage/>}/>
+					<Route path='profile' element={<RegForm/>}/>
 				</Routes>
 			</BrowserRouter>
 		</div>

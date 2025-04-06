@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import Arcticle from '../Arcticle'
+import Header from '../Header'
 
 export default function MainPage() {
   const data = localStorage.getItem('data')
@@ -10,9 +11,7 @@ export default function MainPage() {
   }
 	return (
 		<div>
-			<div className='header'>
-
-      </div>
+			<Header/>
       <div>
         <button onClick={()=>{OpenArticleCreator()}}>Создать статью</button>
         <div>{createArticle ? <Arcticle data={data} closeArticle={setCreateArticle}/> : ''}</div>

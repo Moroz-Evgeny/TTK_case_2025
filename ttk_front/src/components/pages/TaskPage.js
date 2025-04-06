@@ -34,7 +34,7 @@ export default function TaskPage() {
 		fetch(`http://31.41.155.241:8000/task`, {
 			method: 'GET',
 			headers: {
-				Authorization: `Bearer ${token}`,
+				Authorization : `Bearer ${token}`,
 				'Content-Type': 'application/json',
 			},
 		})
