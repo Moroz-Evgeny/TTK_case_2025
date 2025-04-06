@@ -133,8 +133,25 @@ useEffect(() => {
 							<p>
 								<b>Ответсвенный:</b> {task.assignee_login}
 							</p>
-							<button className='priorityMainBtn'>Открыть</button>
-							<div></div>
+							<button
+								onClick={() => handleOpenTask(task.id_task)}
+								className='priorityMainBtn'
+								disabled={
+									openedTaskIds.length > 0 &&
+									!openedTaskIds.includes(task.id_task)
+								}
+							>
+								Открыть
+							</button>
+							<div>
+								{openedTaskIds.includes(task.id_task) && (
+									<Task
+										taskIDs={openedTaskIds}
+										openedTaskIds={setOpenedTaskIds}
+										task={task}
+									/>
+								)}
+							</div>
 						</div>
 					))}
 				</div>
