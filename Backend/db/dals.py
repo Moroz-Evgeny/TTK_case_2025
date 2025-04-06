@@ -3,8 +3,8 @@ from typing import Optional, Union
 from uuid import UUID
 from sqlalchemy import select, update, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from db.models import PortalRole, User, Task, TaskHistory
-from api.schemas import TaskCreateHistory
+from db.models import Article, ArticleHistory, PortalRole, User, Task, TaskHistory
+from api.schemas import ArticleCreateHistory, TaskCreateHistory
 
 import uuid
 
@@ -74,6 +74,7 @@ class TaskDAL:
       priority: str,
       status: str,
       assignee_id: UUID,
+      assignee_login: str,
       image_names: list,) -> Union[None, Task]:
     new_task = Task(
       title=title,
@@ -84,6 +85,7 @@ class TaskDAL:
       priority=priority,
       status=status,
       assignee_id=assignee_id,
+      assignee_login=assignee_login,
     )
     self.db_session.add(new_task)
     await self.db_session.flush()
@@ -121,4 +123,58 @@ class TaskDAL:
     tasks = result.scalars().all()
     if tasks is not None:
       return tasks
+    
+  async def get_all_history_task(self):
+    query = select(TaskHistory)
+    result = await self.db_session.execute(query)
+    task_history = result.scalars().all()
+    if task_history is not None:
+      return task_history
+
+class ArticleDAL:
+  def __init__(self, db_session: AsyncSession):
+    self.db_session = db_session
   
+  async def create_new_article(
+      self,
+      title: str,
+      content: str,
+      author_id: UUID,
+      author_login: str,
+      image_names: list,) -> Union[None, Article]:
+    new_article = Article(
+      title=title,
+      content=content,
+      author_id=author_id,
+      author_login=author_login,
+      image_names=image_names,
+    )
+    self.db_session.add(new_article)
+    await self.db_session.flush()
+    return new_article
+
+  async def create_history_article(self, body: ArticleCreateHistory) -> Union[None, ArticleHistory]:
+    new_history = ArticleHistory(
+      article_id=body.article_id,
+      article_title=body.article_title,
+      user_login=body.user_login,
+      change_event=body.change_event,
+      timestamp=body.timestamp,
+    )
+    self.db_session.add(new_history)
+    await self.db_session.flush()
+    return new_history
+  
+  async def delete_article(self, id: UUID) -> Union[Article, None]:
+    query = update(Article).where(and_(Article.id == id, Article.is_active == True)).values(is_active = False).returning(Article)
+    result = await self.db_session.execute(query)
+    remote_article = result.fetchone()
+    if remote_article is not None:
+      return remote_article[0]
+  
+  async def update_article(self, id: UUID, update_article_params: dict) -> Union[Article, None]:
+    query = update(Article).where(and_(Article.id == id, Article.is_active == True)).values(update_article_params).returning(Article)
+    result = await self.db_session.execute(query)
+    update_article_id = result.fetchone()
+    if update_article_id is not None:
+      return update_article_id[0]

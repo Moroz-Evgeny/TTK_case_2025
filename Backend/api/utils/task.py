@@ -34,8 +34,9 @@ async def _create_new_task(
     priority: str,
     status: str,
     assignee_id: UUID,
+    assignee_login: str,
     image_names: list,
-    session) -> Union[None, UUID]:
+    session) -> Union[None, Task]:
   async with session.begin():
     task_dal = TaskDAL(session)
     task = await task_dal.create_new_task(
@@ -46,6 +47,7 @@ async def _create_new_task(
       priority=priority,
       status=status,
       assignee_id=assignee_id,
+      assignee_login=assignee_login,
       image_names=image_names,
     )
     if task is not None:
@@ -90,9 +92,9 @@ async def _get_all_task(session):
     if all_task is not None:
       return all_task
 
-async def _get_all_historytask(session):
+async def _get_all_history_task(session):
   async with session.begin():
     task_dal = TaskDAL(session)
-    all_task = await task_dal.get_all_task()
+    all_task = await task_dal.get_all_history_task()
     if all_task is not None:
       return all_task

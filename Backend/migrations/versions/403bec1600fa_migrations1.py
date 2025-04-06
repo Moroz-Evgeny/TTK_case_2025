@@ -1,8 +1,8 @@
 """migrations1
 
-Revision ID: ecec64ae28eb
+Revision ID: 403bec1600fa
 Revises: 
-Create Date: 2025-04-05 17:38:03.272045
+Create Date: 2025-04-06 08:27:52.726207
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'ecec64ae28eb'
+revision = '403bec1600fa'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,7 +23,7 @@ def upgrade() -> None:
     sa.Column('article_id', sa.Integer(), nullable=False),
     sa.Column('article_title', sa.String(), nullable=False),
     sa.Column('user_login', sa.String(), nullable=False),
-    sa.Column('change_event', sa.String(), nullable=False),
+    sa.Column('change_event', postgresql.ARRAY(sa.String()), nullable=False),
     sa.Column('timestamp', postgresql.TIMESTAMP(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id')
@@ -33,9 +33,11 @@ def upgrade() -> None:
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('title', sa.String(), nullable=False),
     sa.Column('content', sa.Text(), nullable=False),
-    sa.Column('image_url', sa.String(), nullable=True),
+    sa.Column('image_names', postgresql.ARRAY(sa.String()), nullable=True),
     sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), nullable=True),
     sa.Column('author_id', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('author_login', sa.String(), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id_article'),
     sa.UniqueConstraint('id'),
     sa.UniqueConstraint('id_article')
@@ -61,6 +63,7 @@ def upgrade() -> None:
     sa.Column('priority', sa.String(), nullable=True),
     sa.Column('status', sa.String(), nullable=True),
     sa.Column('assignee_id', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('assignee_login', sa.String(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id_task'),
     sa.UniqueConstraint('id'),

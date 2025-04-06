@@ -7,10 +7,10 @@ from fastapi import APIRouter, Request, Response, Depends,HTTPException, UploadF
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
-from api.schemas import TaskCreateHistory, UpdateTaskRequest
+from api.schemas import TaskCreateHistory, UpdateTaskRequest, ShowTask
 
 from api.utils.jwt import _get_current_user_from_access_token
-from api.utils.task import _create_new_task, _save_task_and_articles_images, _create_history_task, _delete_task, _update_task, _get_all_task
+from api.utils.task import _create_new_task, _save_task_and_articles_images, _create_history_task, _delete_task, _update_task, _get_all_task, _get_all_history_task
 from api.utils.user import _get_user_by_login
 
 from db.session import get_db
@@ -21,7 +21,7 @@ from db.models import PortalRole, User
 task_router = APIRouter()
 logger = getLogger(__name__)
 
-@task_router.post('/', response_model=Union[UUID, None])
+@task_router.post('/', response_model=ShowTask)
 async def create_new_task(
     title: str = Form(...),
     description: str = Form(...), 
@@ -33,7 +33,7 @@ async def create_new_task(
     image: List[UploadFile] = File([]),
     user: User = Depends(_get_current_user_from_access_token),
     session: AsyncSession = Depends(get_db)
-) -> Union[None, UUID]:
+) -> Union[None, ShowTask]:
     try:
       image_names = await _save_task_and_articles_images(image)
       if image_names is None:
@@ -50,6 +50,7 @@ async def create_new_task(
           priority=priority,
           status=status,
           assignee_id=assignee.id,
+          assignee_login=assignee.login,
           image_names=image_names,
           session=session)
       if new_task is None:
@@ -66,7 +67,7 @@ async def create_new_task(
       )          
       if task_history is None:
           raise HTTPException(status_code=409, detail="Create task history error.")
-      return new_task.id
+      return new_task
     except IntegrityError as err:
       logger.error(err)
       raise HTTPException(status_code=503, detail=f"Database error: {err}")

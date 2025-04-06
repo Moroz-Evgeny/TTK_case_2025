@@ -47,9 +47,11 @@ class Article(Base):
    id = Column(UUID(as_uuid=True), default=uuid.uuid4, unique=True)
    title = Column(String, nullable=False)
    content = Column(Text, nullable=False)
-   image_url = Column(String, nullable=True)
+   image_names = Column(ARRAY(String), nullable=True)
    updated_at = Column(TIMESTAMP(timezone=True), default=datetime.utcnow(), onupdate=datetime.utcnow())
    author_id = Column(UUID(as_uuid=True), nullable=False)
+   author_login = Column(String, nullable=False)
+   is_active = Column(Boolean, default=True)
    
 
 class ArticleHistory(Base):
@@ -59,7 +61,7 @@ class ArticleHistory(Base):
    article_id = Column(Integer, nullable=False)
    article_title = Column(String, nullable=False)
    user_login = Column(String, nullable=False)
-   change_event = Column(String, nullable=False)
+   change_event = Column(ARRAY(String), nullable=False)
    timestamp = Column(TIMESTAMP(timezone=True), default=datetime.utcnow())
    
 
@@ -76,6 +78,7 @@ class Task(Base):
    priority = Column(String, default=TaskPriority.MEDIUM)
    status = Column(String, default=TaskStatus.CURRENT)
    assignee_id = Column(UUID(as_uuid=True), nullable=False)
+   assignee_login = Column(String, nullable=False)
    is_active = Column(Boolean, default=True)
 
 class TaskHistory(Base):

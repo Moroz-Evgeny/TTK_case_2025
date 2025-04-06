@@ -18,6 +18,25 @@ class TunedModel(BaseModel):
         from_attributes = True
         exclude_none = True
 
+class ShowTask(TunedModel):
+    id: uuid.UUID
+    id_task: int
+    title: str
+    description: str
+    image_names: list
+    created_at: datetime
+    due_date: datetime
+    priority: str
+    status: str
+    assignee_login: str
+
+class ShowArticle(TunedModel):
+    id: uuid.UUID
+    id_article: int
+    title: str
+    content: str
+    updated_at: datetime
+    author_login: str
 
 class ShowUser(TunedModel):
     user_id: uuid.UUID | None = None
@@ -70,6 +89,19 @@ class UpdateTaskRequest(BaseModel):
     due_date: Optional[datetime] = None
     priority: str | None = None
     status: str | None = None
+
+class ArticleCreateHistory(BaseModel):
+    article_id: int
+    article_title: str
+    user_login: str 
+    change_event: list
+    timestamp: Optional[datetime]
+
+class UpdateArticleRequest(BaseModel):
+    title: str | None = None
+    content: str | None = None
+
+
 
 class Token(BaseModel):
     access_token: str
