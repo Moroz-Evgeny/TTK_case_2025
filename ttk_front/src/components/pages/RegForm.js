@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function RegForm({logo}) {
 	
@@ -16,6 +17,8 @@ export default function RegForm({logo}) {
 	const [isLoginValid , setIsLoginValid] = useState(true)
 	const [isValidPassword, setIsValidPassword] = useState(true)
 	const [repeatPasswordForm, setRepeatPasswordForm] = useState('')
+
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		if ( loginForm === '' ||
@@ -102,6 +105,7 @@ export default function RegForm({logo}) {
 			.then(result => {
 				console.log(result)
 				setData(result)
+				navigate('/login')
 			})
 			.catch(error => console.error('Ошибка запроса:', error))
 	}

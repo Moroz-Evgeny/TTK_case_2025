@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function LogForm({ logo }) {
 	const [loginForm, setLoginForm] = useState('')
@@ -6,7 +7,7 @@ export default function LogForm({ logo }) {
 	const [token, setToken] = useState(localStorage.getItem('token') || '')
 	const [btnStyle, setBtnStyle] = useState('btn disable')
 	const [data, setData] = useState({})
-
+	const navigate = useNavigate()
 	useEffect(() => {
 		if (loginForm === '' || passwordForm === '') {
 			setBtnStyle('btn disable')
@@ -47,6 +48,8 @@ export default function LogForm({ logo }) {
 				if (result.access_token) {
 					localStorage.setItem('token', result.access_token)
 					setToken(result.access_token)
+					navigate('/tasks')
+
 				}
 				setData(result)
 				console.log(result)

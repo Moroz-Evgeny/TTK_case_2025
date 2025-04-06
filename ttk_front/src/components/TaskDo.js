@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 
-export default function TaskDo({ createTask, createAt }) {
+export default function TaskDo({ tasks, setTasks, createTask, createAt }) {
 	const [article, setArticle] = useState('')
 	const [content, setTaskDescribtion] = useState('')
-	const [priority, setPriority] = useState('MEDIUM')
+	const [priority, setPriority] = useState('Средний')
 	const [status, setStatus] = useState('Отложенная')
-	const [token, setToken] = useState(localStorage.getItem('token'))
+	const [token] = useState(localStorage.getItem('token'))
 	const [login, setLogin] = useState('')
 	const [dueDate, setDueDate] = useState('')
 	const [files, setFiles] = useState([])
@@ -36,69 +36,10 @@ export default function TaskDo({ createTask, createAt }) {
 		return new Date(dueDate).toISOString()
 	}
 
-	// Обновление access токена, refresh берётся из куки
-	const refreshToken = async () => {
-		try {
-			const response = await fetch('http://31.41.155.241:8000/login/refresh', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				credentials: 'include',
-			})
-
-			if (!response.ok) throw new Error('Failed to refresh token')
-
-			const data = await response.json()
-			localStorage.setItem('token', data.access_token)
-			setToken(data.access_token)
-			return data.access_token
-		} catch (error) {
-			console.error('Ошибка обновления токена:', error)
-			return null
-		}
-	}
-
-	const fetchWithAuth = async (url, options = {}) => {
-		let currentToken = token
-
-		const makeRequest = async () => {
-			const headers = {
-				...(options.headers || {}),
-				Authorization: `Bearer ${currentToken}`,
-			}
-
-			const response = await fetch(url, {
-				...options,
-				headers,
-				credentials: 'include',
-			})
-
-			if (response.status === 401) {
-				const newToken = await refreshToken()
-				if (!newToken) throw new Error('Требуется повторная авторизация')
-
-				const retryHeaders = {
-					...headers,
-					Authorization: `Bearer ${newToken}`,
-				}
-
-				return await fetch(url, {
-					...options,
-					headers: retryHeaders,
-					credentials: 'include',
-				})
-			}
-
-			return response
-		}
-
-		return makeRequest()
-	}
-
 	const handleSubmit = async e => {
 		e.preventDefault()
-		createTask();
+		createTask()
+
 		const formData = new FormData()
 		formData.append('title', article)
 		formData.append('description', content)
@@ -108,11 +49,15 @@ export default function TaskDo({ createTask, createAt }) {
 		formData.append('assignee_login', login)
 		formData.append('create_at', createAt)
 		files.forEach(file => formData.append('image', file))
-		console.log(formData)
+
 		try {
-			const response = await fetchWithAuth('http://31.41.155.241:8000/task', {
+			const response = await fetch('http://31.41.155.241:8000/task', {
 				method: 'POST',
 				body: formData,
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+				credentials: 'include',
 			})
 
 			if (!response.ok) {
@@ -120,6 +65,7 @@ export default function TaskDo({ createTask, createAt }) {
 				console.error('Ошибка при создании задачи:', errorData)
 			} else {
 				const data = await response.json()
+				setTasks([...tasks , data])
 				console.log('Задача успешно создана. ID:', data)
 			}
 		} catch (err) {
@@ -158,7 +104,6 @@ export default function TaskDo({ createTask, createAt }) {
 					onChange={e => setDueDate(e.target.value)}
 				/>
 
-				{/* Приоритет */}
 				<div className='priority_nav'>
 					<button
 						className='priorityMainBtn'
@@ -169,7 +114,7 @@ export default function TaskDo({ createTask, createAt }) {
 					</button>
 					{priorityDropdownVisible && (
 						<ul className='priority-dropdown'>
-							{['HIGH', 'MEDIUM', 'LOW'].map(p => (
+							{['Высокий', 'Средний', 'Низкий'].map(p => (
 								<li key={p}>
 									<button
 										className='priorityBtn'
@@ -184,7 +129,6 @@ export default function TaskDo({ createTask, createAt }) {
 					)}
 				</div>
 
-				{/* Статус */}
 				<div className='priority_nav'>
 					<button
 						className='priorityMainBtn'
@@ -195,7 +139,7 @@ export default function TaskDo({ createTask, createAt }) {
 					</button>
 					{statusDropdownVisible && (
 						<ul className='priority-dropdown'>
-							{['Активная', 'Отложенная', 'Выполнена'].map(s => (
+							{['В процессе', 'Отложенная', 'Завершена'].map(s => (
 								<li key={s}>
 									<button
 										className='priorityBtn'
@@ -210,7 +154,6 @@ export default function TaskDo({ createTask, createAt }) {
 					)}
 				</div>
 
-				{/* Загрузка файлов */}
 				<div className='upload'>
 					<label htmlFor='fileUpload' className='upload-btn'>
 						Загрузить файлы: {files.length}

@@ -1,7 +1,18 @@
 import React from 'react'
 
-export default function Task({task}) {
-  return (
+import { useState } from 'react'
+
+export default function Task({ taskIDs, openedTaskIds, task }) {
+
+  function handleOpenTask(taskId) {
+		// Если задача ещё не открыта — добавляем её {
+			openedTaskIds(taskIDs.splice(taskId, taskId))
+  }
+
+  
+	
+
+	return (
 		<div>
 			<div className='read_task'>
 				<h4>
@@ -23,7 +34,7 @@ export default function Task({task}) {
 				<p>
 					<b>Ответсвенный:</b> {task.assignee_id}
 				</p>
-        <button>Закрыть</button>
+				<button onClick={()=>{handleOpenTask(task.id_task)}}>Закрыть</button>
 			</div>
 			<div className='back_task'></div>
 		</div>

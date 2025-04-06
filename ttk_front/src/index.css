@@ -410,6 +410,7 @@ p::content {
 	margin-top: 150px;
 	border-radius: 8px;
 	font-size: 20px;
+  z-index: 2;
 }
 
 .task_desc {
@@ -421,6 +422,7 @@ p::content {
 	position: absolute;
 	background-color: #7b7b7b42;
 	width: 100%;
+  z-index: 1;
 	height: 100%;
 	top: 0;
 	right: 0;
@@ -428,3 +430,13 @@ p::content {
 	justify-content: center;
 }
 
+.task_page {
+  width: 100%;
+  background-image: url("./imgs/background.png");
+  background-position: -100px;
+}
+
+.container {
+  width: 1440px;
+  margin: auto;
+}
