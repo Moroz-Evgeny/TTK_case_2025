@@ -21,14 +21,16 @@ export default function RegForm({logo}) {
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		if ( loginForm === '' ||
+		if (
+			loginForm === '' ||
 			nameForm === '' ||
-			!/^[A-Za-z]+$/.test(nameForm) ||
+			!/^[А-Яа-я]+$/.test(nameForm) ||
 			lastnameForm === '' ||
-			!/^[A-Za-z]+$/.test(middlenameForm) || middlenameForm === '' ||
-			!/^[A-Za-z]+$/.test(lastnameForm) ||
-			passwordForm === '' || 
-			repeatPasswordForm === '' 
+			!/^[А-Яа-я]+$/.test(middlenameForm) ||
+			middlenameForm === '' ||
+			!/^[А-Яа-я]+$/.test(lastnameForm) ||
+			passwordForm === '' ||
+			repeatPasswordForm === ''
 		) {
 			setBtnStyle('btn disable')
 		} else {
