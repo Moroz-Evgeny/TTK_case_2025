@@ -11,7 +11,7 @@ from api.schemas import ArticleCreateHistory, UpdateArticleRequest, ShowArticle
 
 from api.utils.task import _save_task_and_articles_images
 from api.utils.jwt import _get_current_user_from_access_token
-from api.utils.article import _create_new_article, _create_history_article, _delete_article, _update_article
+from api.utils.article import _create_new_article, _create_history_article, _delete_article, _get_all_article, _update_article, _get_all_history_article
 from api.utils.user import _get_user_by_login
 
 from db.session import get_db
@@ -22,7 +22,7 @@ article_router = APIRouter()
 logger = getLogger(__name__)
 
 @article_router.post('/', response_model=Union[ShowArticle, None])
-async def create_new_task(
+async def create_new_article(
     title: str = Form(...),
     content: str = Form(...), 
     image: List[UploadFile] = File([]),
@@ -61,7 +61,7 @@ async def create_new_task(
       raise HTTPException(status_code=503, detail=f"Database error: {err}")
 
 @article_router.delete('/', response_model=Union[UUID, None])
-async def delete_task(
+async def delete_article(
     id: UUID,
     user: User = Depends(_get_current_user_from_access_token),
     session: AsyncSession = Depends(get_db)) -> Union[None, UUID]:
@@ -84,14 +84,14 @@ async def delete_task(
    return delete_article.id
 
 @article_router.patch('/', response_model=Union[UUID, None])
-async def update_task(
+async def update_article(
    id: UUID,
    body: UpdateArticleRequest,
    session: AsyncSession = Depends(get_db),
    user: User = Depends(_get_current_user_from_access_token)) -> Union[UUID, None]:
    update_article_params = body.dict(exclude_none=True)
    if update_article_params == {}:
-      raise HTTPException(status_code=422, detail="At least one parameter for user update info should be provided")
+      raise HTTPException(status_code=422, detail="At least one parameter for article update info should be provided")
    update_article = await _update_article(id=id, update_article_params=update_article_params, session=session)
    if update_article is None:
       raise HTTPException(status_code=404, detail=f"Article with id '{id}' is not found")
@@ -109,19 +109,19 @@ async def update_task(
     session=session,
    ) 
    if article_history is None:
-     raise HTTPException(status_code=503, detail="Failed to create task history.")
+     raise HTTPException(status_code=503, detail="Failed to create Article history.")
    return update_article.id
 
-# @article_router.get('/')
-# async def get_all_task(user: User = Depends(_get_current_user_from_access_token), session: AsyncSession = Depends(get_db)):
-#    tasks = await _get_all_task(session=session)
-#    if tasks is None:
-#      raise HTTPException(status_code=404, detail="Tasks not found.")
-#    return {"data": tasks}
+@article_router.get('/')
+async def get_all_article(user: User = Depends(_get_current_user_from_access_token), session: AsyncSession = Depends(get_db)):
+   articles = await _get_all_article(session=session)
+   if articles is None:
+     raise HTTPException(status_code=404, detail="Articles not found.")
+   return {"data": articles}
 
-# @article_router.get('/history')
-# async def get_all_task(user: User = Depends(_get_current_user_from_access_token), session: AsyncSession = Depends(get_db)):
-#    task_history = await _get_all_history_task(session=session)
-#    if task_history is None:
-#      raise HTTPException(status_code=404, detail="Tasks not found.")
-#    return {"data": task_history}
+@article_router.get('/history')
+async def get_all_history_article(user: User = Depends(_get_current_user_from_access_token), session: AsyncSession = Depends(get_db)):
+   article_history = await _get_all_history_article(session=session)
+   if article_history is None:
+     raise HTTPException(status_code=404, detail="Articles not found.")
+   return {"data": article_history}

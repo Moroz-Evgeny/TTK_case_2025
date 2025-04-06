@@ -103,7 +103,7 @@ async def update_task(
    user: User = Depends(_get_current_user_from_access_token)) -> Union[UUID, None]:
    update_task_params = body.dict(exclude_none=True)
    if update_task_params == {}:
-      raise HTTPException(status_code=422, detail="At least one parameter for user update info should be provided")
+      raise HTTPException(status_code=422, detail="At least one parameter for task update info should be provided")
    update_task = await _update_task(id=id, update_task_params=update_task_params, session=session)
    if update_task is None:
       raise HTTPException(status_code=404, detail=f"Task with id '{id}' is not found")
@@ -132,7 +132,7 @@ async def get_all_task(user: User = Depends(_get_current_user_from_access_token)
    return {"data": tasks}
 
 @task_router.get('/history')
-async def get_all_task(user: User = Depends(_get_current_user_from_access_token), session: AsyncSession = Depends(get_db)):
+async def get_all_history_task(user: User = Depends(_get_current_user_from_access_token), session: AsyncSession = Depends(get_db)):
    task_history = await _get_all_history_task(session=session)
    if task_history is None:
      raise HTTPException(status_code=404, detail="Tasks not found.")

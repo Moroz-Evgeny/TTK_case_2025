@@ -13,18 +13,26 @@ from db.models import PortalRole, User, Task
 
 
 async def _save_task_and_articles_images(images: UploadFile) -> Union[None, str]:
-  image_names = []
-  if images[0].filename == '':
-    return image_names
-  for image in images:
-    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
-    filename = f"{uuid.uuid4()}_{image.filename}"
-    file_path = os.path.normpath(os.path.join(settings.UPLOAD_DIR, filename))
-    with open(file_path, "wb") as buffer:
-      shutil.copyfileobj(image.file, buffer)
-    image_names.append(filename)  # Или относительный путь, если нужно
+    image_names = []
+    
+    if images[0].filename == '':
+        return image_names
+    
+    upload_dir = settings.UPLOAD_DIR
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir, exist_ok=True)  
 
-  return image_names
+    for image in images:
+
+        filename = f"{uuid.uuid4()}_{image.filename}"
+        file_path = os.path.normpath(os.path.join(upload_dir, filename))
+        
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+        
+        image_names.append(filename) 
+    
+    return image_names
 
 async def _create_new_task(
     title: str,

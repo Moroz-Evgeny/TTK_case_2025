@@ -63,16 +63,16 @@ async def _update_article(
     if article is not None:
       return article
     
-async def _get_all_task(session):
+async def _get_all_article(session):
   async with session.begin():
-    task_dal = TaskDAL(session)
-    all_task = await task_dal.get_all_task()
-    if all_task is not None:
-      return all_task
+    article_dal = ArticleDAL(session)
+    all_article = await article_dal.get_all_article()
+    if all_article is not None:
+      return all_article
 
-async def _get_all_history_task(session):
+async def _get_all_history_article(session):
   async with session.begin():
-    task_dal = TaskDAL(session)
-    all_task = await task_dal.get_all_history_task()
-    if all_task is not None:
-      return all_task
+    article_dal = ArticleDAL(session)
+    all_article = await article_dal.get_all_history_article()
+    if all_article is not None:
+      return all_article

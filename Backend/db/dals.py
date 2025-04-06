@@ -178,3 +178,17 @@ class ArticleDAL:
     update_article_id = result.fetchone()
     if update_article_id is not None:
       return update_article_id[0]
+
+  async def get_all_article(self):
+    query = select(Article)
+    result = await self.db_session.execute(query)
+    articles = result.scalars().all()
+    if articles is not None:
+      return articles
+    
+  async def get_all_history_article(self):
+    query = select(TaskHistory)
+    result = await self.db_session.execute(query)
+    article_history = result.scalars().all()
+    if article_history is not None:
+      return article_history
