@@ -10,6 +10,18 @@ import uuid
 
 Base = declarative_base()
 
+
+class TaskPriority(str, Enum):
+   LOW = "Низкий"
+   MEDIUM = "Средний"
+   HIGH = "Высокий"
+
+class TaskStatus(str, Enum):
+   CURRENT = "Текущая"
+   POSTPONED = "Отложенная"
+   COMPLETED = "Выполненная"
+
+
 class PortalRole(str, Enum):
     ROLE_PORTAL_USER = "ROLE_PORTAL_USER"
     ROLE_PORTAL_ADMIN = "ROLE_PORTAL_ADMIN"
