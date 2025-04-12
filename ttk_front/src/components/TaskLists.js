@@ -4,7 +4,7 @@ export default function TaskLists({tasks}) {
 	const [openedTaskIds, setOpenedTaskIds] = useState([])
   
 	function handleOpenTask(taskId) {
-		// Если задача ещё не открыта — добавляем её
+		
 		if (!openedTaskIds.includes(taskId)) {
 			setOpenedTaskIds(prev => [...prev, taskId])
 		}
