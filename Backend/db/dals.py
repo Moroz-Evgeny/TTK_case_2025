@@ -130,6 +130,13 @@ class TaskDAL:
     task_history = result.scalars().all()
     if task_history is not None:
       return task_history
+    
+  async def get_task_by_id(self, id: UUID) -> Union[Task, None]:
+    query = select(Task).where(Task.id == id)
+    result = await self.db_session.execute(query)
+    task_row = result.fetchone()
+    if task_row is not None:
+      return task_row[0]
 
 class ArticleDAL:
   def __init__(self, db_session: AsyncSession):
@@ -192,3 +199,10 @@ class ArticleDAL:
     article_history = result.scalars().all()
     if article_history is not None:
       return article_history
+    
+  async def get_article_by_id(self, id: UUID) -> Union[Task, None]:
+    query = select(Article).where(Article.id == id)
+    result = await self.db_session.execute(query)
+    article_row = result.fetchone()
+    if article_row is not None:
+      return article_row[0]

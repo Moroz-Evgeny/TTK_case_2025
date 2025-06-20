@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from api.schemas import TaskCreateHistory, UpdateTaskRequest, ShowTask
 
 from api.utils.jwt import _get_current_user_from_access_token
-from api.utils.task import _create_new_task, _save_task_and_articles_images, _create_history_task, _delete_task, _update_task, _get_all_task, _get_all_history_task
+from api.utils.task import _create_new_task, _save_task_and_articles_images, _create_history_task, _delete_task, _update_task, _get_all_task, _get_all_history_task, _get_task_by_id
 from api.utils.user import _get_user_by_login
 
 from db.session import get_db

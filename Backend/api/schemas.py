@@ -106,3 +106,7 @@ class UpdateArticleRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str 
+
+class GenerateArticle(BaseModel):
+    title: str
+    content: str | None = ''

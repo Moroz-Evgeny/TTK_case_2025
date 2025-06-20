@@ -106,3 +106,10 @@ async def _get_all_history_task(session):
     all_task = await task_dal.get_all_history_task()
     if all_task is not None:
       return all_task
+
+async def _get_task_by_id(id: UUID, session) -> Union[Task, None]:
+    async with session.begin():
+        task_dal = TaskDAL(session)
+        task = await task_dal.get_task_by_id(id=id)
+        if task is not None:
+            return task

@@ -57,7 +57,7 @@ async def _get_user_by_login(login: str, session) -> Union[User, None]:
 async def _check_user_permissions(target_user: User, current_user: User) -> bool:
     if PortalRole.ROLE_PORTAL_ADMIN == target_user.role and PortalRole.ROLE_PORTAL_USER == current_user.role:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Superadmin cannot be deleted by the user."
+            status_code=status.HTTP_403_FORBIDDEN, detail="Admin cannot be deleted by the user."
         )
     if target_user.id != current_user.id:
         if PortalRole.ROLE_PORTAL_ADMIN != current_user.role:

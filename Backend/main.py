@@ -7,6 +7,7 @@ from api.handlers.login import login_router
 from api.handlers.task import task_router
 from api.handlers.static import static_router
 from api.handlers.article import article_router
+from api.handlers.ai import ai_router
 
 import uvicorn
 
@@ -19,6 +20,7 @@ main_api_router.include_router(login_router, prefix="/login", tags=['login'])
 main_api_router.include_router(task_router, prefix="/task", tags=['task'])
 main_api_router.include_router(article_router, prefix="/article", tags=['article'])
 main_api_router.include_router(static_router, prefix="/static", tags=["static"])
+main_api_router.include_router(ai_router, prefix="/ai", tags=["ai"])
 
 
 app.include_router(main_api_router)

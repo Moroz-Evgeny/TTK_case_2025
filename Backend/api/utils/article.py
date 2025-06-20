@@ -76,3 +76,10 @@ async def _get_all_history_article(session):
     all_article = await article_dal.get_all_history_article()
     if all_article is not None:
       return all_article
+
+async def _get_article_by_id(id: UUID, session) -> Union[Article, None]:
+    async with session.begin():
+        article_dal = ArticleDAL(session)
+        article = await article_dal.get_article_by_id(id=id)
+        if article is not None:
+            return article
